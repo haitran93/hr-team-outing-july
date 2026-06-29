@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZaloPay · Team Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#FFF7F8; --surface:#FFFFFF; --ink:#2A2730; --ink-soft:#938F9E;
+    --coral:#FD267D; --coral-deep:#E01E6B; --life:#FF7A3D; --line:#F0EAF0;
+    --ok:#16A974; --ok-soft:#E5F7EF;
+    --shadow:0 10px 30px rgba(253,38,125,.08); --shadow-lg:0 22px 55px rgba(253,38,125,.16);
+    --flame:linear-gradient(115deg,#FD267D 0%,#FF4E6A 52%,#FF6036 100%);
+    font-family:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased}
+  body{line-height:1.5}
+  .display{font-family:"Poppins",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.04}
+  a{color:var(--coral-deep)}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,textarea,select{font-family:inherit;font-size:15px;color:var(--ink)}
+  input,textarea,select{width:100%;background:var(--surface);border:1.5px solid var(--line);
+    border-radius:14px;padding:12px 14px;transition:border-color .15s, box-shadow .15s}
+  textarea{resize:vertical;min-height:58px}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--coral);box-shadow:0 0 0 3px rgba(253,38,125,.15)}
+  label{display:block;font-weight:600;font-size:13.5px;margin-bottom:6px}
+  .hint{color:var(--ink-soft);font-size:12.5px;font-weight:400;margin-top:5px}
+  .hint.center{text-align:center}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+  /* ===== buttons ===== */
+  .btn{background:var(--flame);color:#fff;font-weight:700;font-size:15px;padding:15px 28px;border-radius:999px;box-shadow:0 8px 22px rgba(253,38,125,.30);transition:filter .15s,box-shadow .15s,transform .12s}
+  .btn:hover{filter:brightness(1.05);box-shadow:0 11px 28px rgba(253,38,125,.42);transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none;filter:none}
+  .btn.full{width:100%}
+  .btn.ghost{background:var(--surface);color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--coral);color:var(--coral-deep);filter:none;box-shadow:none;transform:none}
+  .btn.sm{padding:10px 18px;font-size:13.5px;white-space:nowrap}
+
+  /* ===== login ===== */
+  #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+    background:radial-gradient(125% 90% at 50% -10%, #FFE2EC 0%, var(--paper) 58%)}
+  .login-card{width:100%;max-width:404px;background:var(--surface);border:1.5px solid var(--line);
+    border-radius:26px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .login-hero{background:var(--flame);padding:30px 28px 26px;color:#fff}
+  .login-hero .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;opacity:.92}
+  .login-hero h1{font-size:27px;font-weight:800;margin:7px 0 4px;letter-spacing:-.02em}
+  .login-hero p{margin:0;font-size:13.5px;opacity:.92;font-weight:500}
+  .login-body{padding:23px 26px 8px;display:flex;flex-direction:column;gap:12px}
+  .login-body label{margin-bottom:4px}
+  .code-input{letter-spacing:.42em;font-weight:700;text-align:center;font-size:18px}
+  .remember{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--ink-soft);margin:3px 0 2px}
+  .remember input{width:auto;margin:0}
+  #loginErr{color:var(--coral-deep);font-size:13px;font-weight:600;min-height:18px;text-align:center}
+  .login-foot{text-align:center;padding:6px 26px 22px}
+  .login-foot .org-link{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-decoration:underline}
+  .login-foot .org-link:hover{color:var(--coral-deep)}
+
+  /* ===== top bar ===== */
+  header{padding:22px 0 6px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .brand .eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--coral-deep)}
+  .brand h1{font-size:clamp(24px,4vw,34px);margin:3px 0 0;font-weight:800}
+  .whoami-chip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:5px 7px 5px 7px}
+  .whoami-chip #signedAs{font-size:13.5px;font-weight:700;color:var(--ink)}
+  .signout{font-size:12.5px;font-weight:600;color:var(--ink-soft);padding:7px 13px;border-radius:999px}
+  .signout:hover{color:var(--coral-deep);background:var(--paper)}
+  .org-link{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-decoration:underline}
+  .org-link:hover{color:var(--coral-deep)}
+
+  /* ===== journey + progress ===== */
+  .journey{display:flex;align-items:stretch;margin-top:18px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:6px;box-shadow:var(--shadow)}
+  .jstep{flex:1;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;text-align:left;color:var(--ink-soft);transition:.15s}
+  .jstep:hover{background:var(--paper)}
+  .jstep.on{background:var(--paper)}
+  .jnum{flex-shrink:0;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;background:var(--paper);color:var(--ink-soft);border:1.5px solid var(--line);transition:.15s}
+  .jstep.on .jnum{background:var(--coral);color:#fff;border-color:var(--coral)}
+  .jstep.done .jnum{background:var(--ok);color:#fff;border-color:var(--ok)}
+  .jstep.done .jnum span{display:none}
+  .jstep.done .jnum::after{content:"\2713";font-size:15px}
+  .jmeta{min-width:0;display:flex;flex-direction:column}
+  .jtitle{font-weight:800;font-size:15px;line-height:1.1;color:var(--ink-soft)}
+  .jstep.on .jtitle{color:var(--ink)}
+  .jsub{font-size:12px;font-weight:500;color:var(--ink-soft);margin-top:2px}
+  .jconn{align-self:center;width:26px;height:2px;background:var(--line);flex-shrink:0;border-radius:2px}
+  @media(max-width:680px){.jstep{padding:10px 11px;gap:9px}.jsub{display:none}.jtitle{font-size:13.5px}.jconn{width:14px}}
+
+  .progress{display:flex;align-items:center;gap:14px;margin-top:14px;padding:0 4px}
+  .progress .ptrack{flex:1;height:9px;background:var(--line);border-radius:999px;overflow:hidden}
+  .progress .pfill{height:100%;width:0;border-radius:999px;background:var(--flame);transition:width .45s ease}
+  .progress.complete .pfill{background:linear-gradient(115deg,var(--ok),#0F9E6A)}
+  .progress .plabel{font-size:12.5px;font-weight:700;color:var(--ink-soft);white-space:nowrap;min-width:96px;text-align:right}
+  .progress.complete .plabel{color:var(--ok)}
+
+  /* ===== panes / layout ===== */
+  .pane{display:none;padding:24px 0 70px}
+  .pane.on{display:block}
+  .grid{display:grid;grid-template-columns:1fr 412px;gap:38px;align-items:start}
+  @media(max-width:920px){.grid{grid-template-columns:1fr}.cardcol{order:-1}}
+
+  .block{background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:22px;margin-bottom:20px;box-shadow:var(--shadow)}
+  .block h2{font-size:19px;margin:0 0 3px;font-weight:700}
+  .block .lead{color:var(--ink-soft);font-size:13.5px;margin:0 0 16px}
+  .field{margin-bottom:15px}
+  .field:last-child{margin-bottom:0}
+  .three{display:grid;gap:9px}
+
+  /* accent + interest chips */
+  .accent-row{display:flex;flex-wrap:wrap;gap:11px}
+  .acc-opt{width:34px;height:34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--line);transition:.12s}
+  .acc-opt:hover{transform:scale(1.09)}
+  .acc-opt.on{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:500;color:var(--ink-soft)}
+  .chip:hover{border-color:var(--coral)}
+  .chip.on{background:var(--flame);border-color:transparent;color:#fff}
+  .countpill{display:inline-block;font-size:11.5px;font-weight:700;color:var(--ink-soft);background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:1px 9px;margin-left:7px;vertical-align:middle}
+
+  /* ===== profile card (dating-app style) ===== */
+  .cardcol{position:sticky;top:18px}
+  .cardcap{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-align:center;margin-bottom:11px}
+  .tcard{position:relative;background:var(--surface);border-radius:24px;box-shadow:var(--shadow-lg);overflow:hidden}
+  .tcard-inner{display:flex;flex-direction:column}
+  .stage{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#241b29;touch-action:none;cursor:grab}
+  .stage.empty{cursor:default;background:linear-gradient(160deg,#2a2030,#3a2533)}
+  .stage.drag{cursor:grabbing}
+  .stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform-origin:center center;
+    will-change:transform;user-select:none;-webkit-user-drag:none;display:none}
+  .stage-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;
+    color:rgba(255,255,255,.72);font-size:13px;font-weight:500;padding:24px;z-index:1}
+  .stage-empty .ph-mono{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:800;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.3)}
+  .photo-scrim{position:absolute;left:0;right:0;bottom:0;height:62%;pointer-events:none;z-index:2;
+    background:linear-gradient(to top,rgba(18,12,22,.92) 4%,rgba(18,12,22,.5) 34%,transparent 100%)}
+  .photo-name{position:absolute;left:18px;right:18px;bottom:16px;z-index:3;color:#fff;pointer-events:none;
+    display:flex;align-items:center;gap:12px}
+  .emblem{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:800;letter-spacing:.02em;color:#fff;text-transform:uppercase;flex-shrink:0;
+    box-shadow:0 0 0 2px rgba(255,255,255,.45),0 4px 12px rgba(0,0,0,.3)}
+  .np-text{min-width:0}
+  .card-name{font-weight:800;font-size:26px;line-height:1.04;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+  .card-handle{font-size:12.5px;color:rgba(255,255,255,.9);font-weight:600;text-shadow:0 1px 8px rgba(0,0,0,.4)}
+
+  .cbody{padding:18px 19px 6px}
+  .stat{margin-bottom:15px}
+  .stat-label{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+  .chips-mini{display:flex;flex-wrap:wrap;gap:7px}
+  .mini{font-size:12px;font-weight:600;background:#FFF0F5;border:1.5px solid #FAD3E2;border-radius:999px;padding:5px 12px;color:var(--coral-deep)}
+  .offers{list-style:none;margin:0;padding:0}
+  .offers li{font-size:13px;line-height:1.45;padding-left:16px;position:relative;color:var(--ink);margin-bottom:3px}
+  .offers li:before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;background:var(--coral)}
+  .offers.life li:before{background:var(--life)}
+  .offers .ph{color:#c3b8b0;font-style:italic}
+  .cfoot{padding:11px 16px 14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+    border-top:1px solid var(--line);text-align:center}
+
+  .photo-controls{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .photo-controls input[type=range]{flex:1;accent-color:var(--coral)}
+  .photo-controls input[type=range]:disabled{opacity:.4}
+  .photo-req{font-size:12px;font-weight:600;color:var(--coral-deep);text-align:center;margin-top:9px}
+  .photo-req.ok{color:var(--ok)}
+
+  .savebar{position:sticky;bottom:0;background:linear-gradient(0deg,var(--paper) 72%,transparent);padding:16px 0 20px}
+  .save-note{font-size:12.5px;color:var(--ink-soft);text-align:center;margin-top:9px}
+
+  /* ===== recognition ===== */
+  .rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.rec-grid{grid-template-columns:1fr}}
+  .rec-card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow);transition:border-color .15s}
+  .rec-card label{display:flex;align-items:center;gap:8px;font-size:14px}
+  .rec-card .tag{font-size:11px;font-weight:700;color:var(--coral-deep)}
+  .rec-card.filled{border-color:var(--ok)}
+  .needid{text-align:center;color:var(--ink-soft);background:var(--surface);border:1.5px dashed var(--line);
+    border-radius:16px;padding:46px 20px;font-size:14.5px}
+
+  /* ===== done ===== */
+  .done{text-align:center;padding:54px 20px}
+  .done .display{font-size:30px;font-weight:800;margin:10px 0 6px}
+  .done p{color:var(--ink-soft);max-width:44ch;margin:0 auto 22px}
+  .done-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+  /* ===== admin ===== */
+  #admin{display:none}#admin.show{display:block}
+  .gate{max-width:392px;margin:54px auto;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:28px;box-shadow:var(--shadow);text-align:center}
+  .gate h2{margin:0 0 6px}
+  .gate p{color:var(--ink-soft);font-size:13px;margin:0 0 18px}
+  .banner{background:#FFF6E8;border:1.5px solid #F4D9A8;color:#8A6516;border-radius:12px;padding:11px 15px;font-size:12.5px;font-weight:500;margin-bottom:16px}
+  .banner.ok{background:var(--ok-soft);border-color:#A7E3C8;color:#0F7A50}
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0 22px}
+  .scard{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:15px 20px;flex:1;min-width:120px}
+  .scard .n{font-size:28px;font-weight:800;line-height:1}
+  .scard .l{font-size:12px;color:var(--ink-soft);margin-top:5px}
+  .atabs{display:flex;gap:8px;margin:6px 0 16px;flex-wrap:wrap}
+  .atab{background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:8px 15px;font-size:13px;font-weight:600;color:var(--ink-soft)}
+  .atab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden;border:1.5px solid var(--line)}
+  th,td{text-align:left;padding:11px 13px;font-size:13.5px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);background:var(--paper)}
+  tr:last-child td{border-bottom:none}
+  .pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .pill.in{background:var(--ok-soft);color:var(--ok)}
+  .pill.out{background:rgba(224,30,107,.12);color:var(--coral-deep)}
+  .dot{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;box-shadow:0 0 0 1.5px rgba(0,0,0,.08)}
+  .code{font-variant-numeric:tabular-nums;font-weight:700;letter-spacing:.12em;font-size:14px}
+  .link-btn{color:var(--coral-deep);font-weight:600;font-size:13px;text-decoration:underline}
+  .pivot{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+  .pivot h4{margin:0 0 9px;font-size:16px}
+  .pivot .from{font-weight:700;font-size:12.5px;color:var(--coral-deep)}
+  .pivot .rt{font-size:13.5px;margin:1px 0 10px;white-space:pre-wrap}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  .danger{color:var(--coral-deep);border-color:rgba(224,30,107,.4)!important}
+  .empty{text-align:center;color:var(--ink-soft);padding:38px;background:var(--surface);border:1.5px dashed var(--line);border-radius:14px}
+  .mono-badge{display:inline-flex;width:26px;height:26px;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-hero">
+      <div class="eyebrow">Team outing · July 17</div>
+      <h1>Your team card</h1>
+      <p>Sign in to build your card and shout out the team.</p>
+    </div>
+    <div class="login-body">
+      <div>
+        <label for="loginHandle">Your handle</label>
+        <input id="loginHandle" placeholder="e.g. HaiTT5" autocomplete="username" autocapitalize="off" spellcheck="false">
+      </div>
+      <div>
+        <label for="loginCode">6-digit passcode</label>
+        <input id="loginCode" class="code-input" placeholder="••••••" inputmode="numeric" maxlength="6" autocomplete="off">
+      </div>
+      <label class="remember"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
+      <button class="btn full" onclick="doLogin()">Enter</button>
+      <div id="loginErr"></div>
+    </div>
+    <div class="login-foot">
+      <button class="org-link" onclick="openAdmin()">I'm the organizer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" style="display:none">
+  <header><div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="eyebrow">Team outing · July 17</div>
+        <h1 class="display">Your team card</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="whoami-chip">
+          <span class="emblem" id="chipBadge" style="width:30px;height:30px;font-size:12px;box-shadow:none">?</span>
+          <span id="signedAs">@you</span>
+          <button class="signout" onclick="signOut()">Sign out</button>
+        </div>
+        <button class="org-link" onclick="openAdmin()">Organizer</button>
+      </div>
+    </div>
+    <div class="journey">
+      <button class="jstep on" data-pane="card" onclick="setPane('card')">
+        <span class="jnum"><span>1</span></span>
+        <span class="jmeta"><span class="jtitle">Build your card</span><span class="jsub">Your team profile card</span></span>
+      </button>
+      <div class="jconn"></div>
+      <button class="jstep" data-pane="rec" onclick="setPane('rec')">
+        <span class="jnum"><span>2</span></span>
+        <span class="jmeta"><span class="jtitle">Shout out the team</span><span class="jsub">Recognition for teammates</span></span>
+      </button>
+    </div>
+    <div class="progress" id="progress">
+      <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+      <div class="plabel" id="plabel">0% complete</div>
+    </div>
+  </div></header>
+
+  <!-- PANE: CARD -->
+  <div class="pane on" id="pane-card"><div class="wrap grid">
+    <div>
+      <div class="block">
+        <h2>The basics</h2>
+        <p class="lead">Your card name and an accent color to make it yours.</p>
+        <div class="field">
+          <label for="fName">Display name</label>
+          <input id="fName" placeholder="e.g. Trang" maxlength="22">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Accent color</label>
+          <div class="accent-row" id="accentRow"></div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>Into <span class="countpill" id="intCount">0 / 3</span></h2>
+        <p class="lead">What you'd actually want to talk about. Pick up to 3.</p>
+        <div class="chips" id="chipRow"></div>
+        <input id="fCustom" placeholder="Add your own, then press Enter" style="margin-top:11px">
+        <div class="hint" id="intNote"></div>
+      </div>
+
+      <div class="block">
+        <h2>3 things you can offer · work</h2>
+        <p class="lead">Be specific. What can a teammate actually come to you for?</p>
+        <div class="three">
+          <input class="off-w" placeholder="e.g. Untangling messy stakeholder asks">
+          <input class="off-w" placeholder="e.g. Building a clean deck fast">
+          <input class="off-w" placeholder="e.g. Interview scorecard design">
+        </div>
+      </div>
+
+      <div class="block">
+        <h2>3 things you can offer · life</h2>
+        <p class="lead">Off the clock. The fun stuff counts.</p>
+        <div class="three">
+          <input class="off-l" placeholder="e.g. Best bún bò spots in District 1">
+          <input class="off-l" placeholder="e.g. A running buddy at 6am">
+          <input class="off-l" placeholder="e.g. Pour-over coffee lessons">
+        </div>
+      </div>
+    </div>
+
+    <!-- live profile card -->
+    <div class="cardcol">
+      <div class="cardcap">Live preview</div>
+      <div class="tcard"><div class="tcard-inner">
+        <div class="stage empty" id="stage">
+          <img id="stageImg">
+          <div class="stage-empty" id="stageEmpty">
+            <span class="ph-mono" id="phMono">?</span>
+            <span>Add a photo (required)<br>then drag to position</span>
+          </div>
+          <div class="photo-scrim"></div>
+          <div class="photo-name">
+            <div class="emblem" id="cEmblem">?</div>
+            <div class="np-text">
+              <div class="card-name" id="cName">Your name</div>
+              <div class="card-handle" id="cHandle">@handle</div>
+            </div>
+          </div>
+        </div>
+        <div class="cbody">
+          <div class="stat"><div class="stat-label">Into</div><div class="chips-mini" id="cInterests"></div></div>
+          <div class="stat"><div class="stat-label">I can help with · work</div><ul class="offers" id="cWork"></ul></div>
+          <div class="stat"><div class="stat-label">I can help with · life</div><ul class="offers life" id="cLife"></ul></div>
+        </div>
+        <div class="cfoot">ZaloPay · Team outing 2026</div>
+      </div></div>
+      <div class="photo-controls">
+        <label class="btn ghost sm" for="photoInput">Upload photo</label>
+        <input id="photoInput" type="file" accept="image/*" style="display:none">
+        <input type="range" id="zoom" min="1" max="3.2" step="0.01" value="1" disabled aria-label="Zoom">
+      </div>
+      <div class="photo-req" id="photoReq">A photo is required to save your card.</div>
+    </div>
+  </div>
+
+  <div class="savebar"><div class="wrap">
+    <button class="btn full" id="saveCard" onclick="saveCard()" disabled>Save my card</button>
+    <div class="save-note" id="cardNote">Add your name and a photo to save. Resubmit anytime before July 17.</div>
+  </div></div>
+  </div>
+
+  <!-- PANE: RECOGNITION -->
+  <div class="pane" id="pane-rec"><div class="wrap">
+    <div class="block" style="margin-bottom:22px">
+      <h2>Shout out your teammates</h2>
+      <p class="lead">A line about something each person did well this half. This feeds their appreciation certificate, so be specific. Skip anyone you've got nothing for, no pressure to fill them all.</p>
+    </div>
+    <div id="recArea"></div>
+  </div>
+
+  <div class="savebar" id="recSavebar" style="display:none"><div class="wrap">
+    <button class="btn full" onclick="saveRec()">Save my shout-outs</button>
+    <div class="save-note">Saved separately from your card. You can come back and add more anytime.</div>
+  </div></div>
+  </div>
+</div>
+
+<!-- ===== DONE ===== -->
+<div id="done" class="wrap" style="display:none"><div class="done">
+  <div class="eyebrow" style="font-weight:700;color:var(--coral-deep);letter-spacing:.12em">Saved</div>
+  <div class="display" id="doneMsg">You're in!</div>
+  <p id="doneSub">Come back and resubmit anytime before July 17 if you want to tweak anything.</p>
+  <div class="done-btns" id="doneBtns"></div>
+</div></div>
+
+<!-- ===== ADMIN ===== -->
+<div id="admin">
+  <header><div class="wrap topbar">
+    <div class="brand"><div class="eyebrow">Organizer</div><h1 class="display" style="font-size:30px">Submission tracker</h1></div>
+    <button class="org-link" onclick="closeAdmin()">← Back to sign in</button>
+  </div></header>
+  <div id="gate" class="wrap"></div>
+  <div id="dash" class="wrap" style="display:none;padding-bottom:60px">
+    <div id="backendBanner"></div>
+    <div class="stat-row" id="statRow"></div>
+    <div class="toolbar">
+      <button class="btn ghost sm" onclick="loadDash()">Refresh</button>
+      <button class="btn ghost sm" onclick="exportJSON()">Export JSON</button>
+      <button class="btn ghost sm" onclick="exportProfilesCSV()">Profiles CSV</button>
+      <button class="btn ghost sm" onclick="exportRecCSV()">Recognition CSV</button>
+      <button class="btn ghost sm danger" onclick="clearAll()">Clear submissions</button>
+    </div>
+    <div class="atabs">
+      <button class="atab on" data-tab="status" onclick="setTab('status')">Who's in</button>
+      <button class="atab" data-tab="passcodes" onclick="setTab('passcodes')">Passcodes</button>
+      <button class="atab" data-tab="profiles" onclick="setTab('profiles')">Profiles</button>
+      <button class="atab" data-tab="received" onclick="setTab('received')">Recognition received</button>
+    </div>
+    <div id="tabBody"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG — paste your Supabase project values here to go live.
+   Leave blank to run on this browser's local storage (dev/preview).
+   See SETUP.md + schema.sql in this folder.
+========================================================= */
+const SUPABASE_URL = "https://bksfbevzjuuvbilkhynm.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrc2ZiZXZ6anV1dmJpbGtoeW5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODA0NTAsImV4cCI6MjA5ODI1NjQ1MH0._zZO1Twy54_7v6GRHB1ZfFWrP2BYDp9UNix4qR4LSxc";
+const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+/* ---------- roster / options ---------- */
+const ROSTER=["HaiTT5","ThyNX","AnhPTL","PhuongNNX","ViNG","NhanLTP","TrangPTT12","HauTT2","AnhNH19","NhiHM","HuyenPLT","ThyNDM","NguyetNTM5"];
+const ACCENTS=["#FD267D","#FF6036","#7A5CFF","#12B5A5","#2E8BFF","#F0A500"];
+const INTERESTS=["Coffee","Food","Sports / gym","Gaming","Music","Travel","Pets","Movies & series","Reading","Investing / FIRE","Parenting","Photography","Tech & AI","Karaoke"];
+
+/* =========================================================
+   DATA LAYER — Supabase REST when configured, else localStorage
+========================================================= */
+const enc=encodeURIComponent;
+async function sb(path,opts){
+  const r=await fetch(SUPABASE_URL+"/rest/v1/"+path,Object.assign({},opts,{
+    headers:Object.assign({apikey:SUPABASE_ANON_KEY,Authorization:"Bearer "+SUPABASE_ANON_KEY,
+      "Content-Type":"application/json"},(opts&&opts.headers)||{})}));
+  if(!r.ok) throw new Error("Supabase "+r.status+": "+(await r.text()));
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+const lkey=h=>h.toLowerCase();
+const LS={
+  get:(k)=>{try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}},
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
+  keys:(p)=>Object.keys(localStorage).filter(k=>k.startsWith(p)),
+};
+const DB={
+  async listMembers(){
+    if(USE_SUPABASE) return (await sb("members?select=*"))||[];
+    return LS.keys("member:").map(k=>LS.get(k)).filter(Boolean);
+  },
+  async getMember(h){
+    const all=await this.listMembers();
+    return all.find(m=>lkey(m.handle)===lkey(h))||null;
+  },
+  async upsertMember(handle,passcode){
+    if(USE_SUPABASE) return sb("members?on_conflict=handle",{method:"POST",
+      headers:{Prefer:"resolution=merge-duplicates"},body:JSON.stringify({handle,passcode})});
+    LS.set("member:"+lkey(handle),{handle,passcode}); return true;
+  },
+  async getProfile(h){
+    if(USE_SUPABASE){const r=await sb("profiles?handle=eq."+enc(h)+"&select=data");return r&&r[0]?r[0].data:null;}
+    return LS.get("profile:"+lkey(h));
+  },
+  async upsertProfile(handle,data){
+    if(USE_SUPABASE) return sb("profiles?on_conflict=handle",{method:"POST",
+      headers:{Prefer:"resolution=merge-duplicates"},
+      body:JSON.stringify({handle,data,updated_at:new Date().toISOString()})});
+    LS.set("profile:"+lkey(handle),data); return true;
+  },
+  async listProfiles(){
+    if(USE_SUPABASE){const r=await sb("profiles?select=handle,data");return (r||[]).map(x=>Object.assign({},x.data,{handle:x.handle}));}
+    return LS.keys("profile:").map(k=>LS.get(k)).filter(Boolean);
+  },
+  async getRecognition(h){
+    if(USE_SUPABASE){const r=await sb("recognition?from_handle=eq."+enc(h)+"&select=data");return r&&r[0]?r[0].data:null;}
+    return LS.get("recognition:"+lkey(h));
+  },
+  async upsertRecognition(handle,data){
+    if(USE_SUPABASE) return sb("recognition?on_conflict=from_handle",{method:"POST",
+      headers:{Prefer:"resolution=merge-duplicates"},
+      body:JSON.stringify({from_handle:handle,data,updated_at:new Date().toISOString()})});
+    LS.set("recognition:"+lkey(handle),data); return true;
+  },
+  async listRecognition(){
+    if(USE_SUPABASE){const r=await sb("recognition?select=from_handle,data");return (r||[]).map(x=>Object.assign({},x.data,{from:x.from_handle}));}
+    return LS.keys("recognition:").map(k=>LS.get(k)).filter(Boolean);
+  },
+  async getConfig(key){
+    if(USE_SUPABASE){const r=await sb("app_config?key=eq."+enc(key)+"&select=value");return r&&r[0]?r[0].value:null;}
+    return localStorage.getItem("cfg:"+key);
+  },
+  async setConfig(key,value){
+    if(USE_SUPABASE) return sb("app_config?on_conflict=key",{method:"POST",
+      headers:{Prefer:"resolution=merge-duplicates"},body:JSON.stringify({key,value})});
+    localStorage.setItem("cfg:"+key,value); return true;
+  },
+  async clearSubmissions(){
+    if(USE_SUPABASE){await sb("profiles?handle=not.is.null",{method:"DELETE"});await sb("recognition?from_handle=not.is.null",{method:"DELETE"});return;}
+    LS.keys("profile:").forEach(k=>localStorage.removeItem(k));
+    LS.keys("recognition:").forEach(k=>localStorage.removeItem(k));
+  }
+};
+
+/* ---------- helpers ---------- */
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function monogram(name,handle){
+  const s=(name||handle||"").trim(); if(!s) return "?";
+  const parts=s.split(/\s+/).filter(Boolean);
+  if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase();
+  return s.slice(0,2).toUpperCase();
+}
+function accentGrad(hex){return "linear-gradient(135deg, "+hex+", color-mix(in srgb, "+hex+" 52%, #ffffff))";}
+
+/* ---------- state ---------- */
+let who="", accent=ACCENTS[0], interests=[];
+let img=null, photoState={scale:1,x:0,y:0};
+let cardSaved=false, recSaved=false;
+
+/* =========================================================
+   AUTH / SESSION
+========================================================= */
+async function doLogin(){
+  const h=document.getElementById("loginHandle").value.trim();
+  const c=document.getElementById("loginCode").value.trim();
+  const err=document.getElementById("loginErr");
+  if(!h||!c){err.textContent="Enter your handle and passcode.";return;}
+  const btn=event&&event.target; if(btn)btn.disabled=true;
+  let m=null;
+  try{ m=await DB.getMember(h); }
+  catch(e){ err.textContent="Couldn't reach the server. Try again."; if(btn)btn.disabled=false; return; }
+  if(!m || String(m.passcode)!==c){
+    err.textContent="Handle or passcode not recognized. Check with your organizer.";
+    if(btn)btn.disabled=false; return;
+  }
+  if(document.getElementById("remember").checked) localStorage.setItem("session:handle",m.handle);
+  err.textContent=""; if(btn)btn.disabled=false;
+  enterApp(m.handle);
+}
+document.getElementById("loginCode").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+document.getElementById("loginHandle").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("loginCode").focus();});
+
+function signOut(){
+  localStorage.removeItem("session:handle");
+  who=""; location.reload();
+}
+
+async function enterApp(handle){
+  who=handle;
+  document.getElementById("login").style.display="none";
+  document.getElementById("admin").classList.remove("show");
+  document.getElementById("done").style.display="none";
+  document.getElementById("app").style.display="block";
+  document.getElementById("signedAs").textContent="@"+handle;
+  await loadProfile(handle);
+  await buildRec();
+  render(); updateProgress(); syncJourney();
+  setPane("card");
+}
+
+/* =========================================================
+   FORM PICKERS
+========================================================= */
+const accentRow=document.getElementById("accentRow");
+function renderAccents(){
+  accentRow.innerHTML="";
+  ACCENTS.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="acc-opt"+(c===accent?" on":"");
+    b.style.background=c; b.title=c;
+    b.onclick=()=>{accent=c;document.querySelectorAll(".acc-opt").forEach(x=>x.classList.toggle("on",x.style.background.toLowerCase()===hexToRgb(c)));render();};
+    accentRow.appendChild(b);
+  });
+}
+function hexToRgb(hex){const n=parseInt(hex.slice(1),16);return "rgb("+((n>>16)&255)+", "+((n>>8)&255)+", "+(n&255)+")";}
+
+const chipRow=document.getElementById("chipRow");
+function buildChips(){chipRow.innerHTML="";INTERESTS.forEach(t=>addChip(t));
+  interests.filter(t=>!INTERESTS.includes(t)).forEach(t=>addChip(t,true));}
+function addChip(t,custom){const b=document.createElement("button");b.className="chip"+(interests.includes(t)?" on":"");b.textContent=t;
+  b.onclick=()=>toggleInterest(t,b);chipRow.appendChild(b);}
+function toggleInterest(t,b){
+  if(interests.includes(t)){interests=interests.filter(x=>x!==t);b.classList.remove("on");}
+  else{ if(interests.length>=3){flashIntNote();return;} interests.push(t);b.classList.add("on"); }
+  render();
+}
+function flashIntNote(){const n=document.getElementById("intNote");n.textContent="That's 3 already — deselect one to swap.";setTimeout(()=>n.textContent="",1800);}
+document.getElementById("fCustom").addEventListener("keydown",e=>{
+  if(e.key==="Enter"){e.preventDefault();const v=e.target.value.trim();if(!v)return;
+    if(interests.length>=3){flashIntNote();return;}
+    if(!INTERESTS.includes(v)&&!interests.includes(v)){interests.push(v);const b=document.createElement("button");b.className="chip on";b.textContent=v;b.onclick=()=>toggleInterest(v,b);chipRow.appendChild(b);}
+    e.target.value="";render();}
+});
+
+/* =========================================================
+   PHOTO: upload, pan, zoom, bake
+========================================================= */
+const stage=document.getElementById("stage"), stageImg=document.getElementById("stageImg"),
+      stageEmpty=document.getElementById("stageEmpty"), zoom=document.getElementById("zoom");
+document.getElementById("photoInput").onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const fr=new FileReader();
+  fr.onload=ev=>{ const im=new Image(); im.onload=()=>{ img=im; stageImg.src=im.src; stageImg.style.display="block";
+    stage.classList.remove("empty"); stageEmpty.style.display="none"; photoState={scale:1,x:0,y:0}; zoom.value=1; zoom.disabled=false; applyTransform(); render(); updateProgress(); };
+    im.src=ev.target.result; };
+  fr.readAsDataURL(f);
+};
+function applyTransform(){ stageImg.style.transform="translate("+photoState.x+"px,"+photoState.y+"px) scale("+photoState.scale+")"; }
+zoom.oninput=()=>{photoState.scale=parseFloat(zoom.value);applyTransform();};
+let dragging=false,sx=0,sy=0,ox=0,oy=0;
+stage.addEventListener("pointerdown",e=>{if(!img)return;dragging=true;stage.classList.add("drag");sx=e.clientX;sy=e.clientY;ox=photoState.x;oy=photoState.y;stage.setPointerCapture(e.pointerId);});
+stage.addEventListener("pointermove",e=>{if(!dragging)return;photoState.x=ox+(e.clientX-sx);photoState.y=oy+(e.clientY-sy);applyTransform();});
+stage.addEventListener("pointerup",()=>{dragging=false;stage.classList.remove("drag");});
+stage.addEventListener("pointercancel",()=>{dragging=false;stage.classList.remove("drag");});
+stage.addEventListener("wheel",e=>{if(!img)return;e.preventDefault();let s=photoState.scale*(1-e.deltaY*0.0012);s=Math.max(1,Math.min(3.2,s));photoState.scale=s;zoom.value=s;applyTransform();},{passive:false});
+
+function bakePhoto(){
+  if(!img) return null;
+  const Bw=720, Bh=900; // 4:5
+  const cv=document.createElement("canvas");cv.width=Bw;cv.height=Bh;const cx=cv.getContext("2d");
+  cx.fillStyle="#241b29";cx.fillRect(0,0,Bw,Bh);
+  const cover=Math.max(Bw/img.naturalWidth,Bh/img.naturalHeight);
+  const w0=img.naturalWidth*cover, h0=img.naturalHeight*cover;
+  const r=Bw/stage.clientWidth;
+  const dw=w0*photoState.scale, dh=h0*photoState.scale;
+  const dx=Bw/2 + photoState.x*r - dw/2, dy=Bh/2 + photoState.y*r - dh/2;
+  cx.drawImage(img,dx,dy,dw,dh);
+  return cv.toDataURL("image/jpeg",0.85);
+}
+
+/* =========================================================
+   LIVE RENDER
+========================================================= */
+function offVals(cls){return [...document.querySelectorAll("."+cls)].map(i=>i.value.trim());}
+function render(){
+  const name=document.getElementById("fName").value.trim();
+  const mono=monogram(name||who, who);
+  document.getElementById("cName").textContent=name||(who||"Your name");
+  document.getElementById("cHandle").textContent=who?("@"+who):"@handle";
+  const badge=document.getElementById("cEmblem");
+  badge.textContent=mono; badge.style.background=accentGrad(accent);
+  const phMono=document.getElementById("phMono"); phMono.textContent=mono; phMono.style.background=accentGrad(accent);
+  const chip=document.getElementById("chipBadge"); chip.textContent=mono; chip.style.background=accentGrad(accent);
+  const ci=document.getElementById("cInterests");
+  ci.innerHTML=interests.length?interests.map(t=>'<span class="mini">'+esc(t)+'</span>').join(""):'<span class="mini" style="opacity:.5">—</span>';
+  renderOffers("cWork",offVals("off-w"));
+  renderOffers("cLife",offVals("off-l"));
+  document.getElementById("intCount").textContent=interests.length+" / 3";
+  refreshSaveBtn();
+}
+function renderOffers(id,vals){
+  const el=document.getElementById(id);const real=vals.filter(Boolean);
+  el.innerHTML = real.length ? real.map(v=>"<li>"+esc(v)+"</li>").join("") : '<li class="ph">Add up to three</li>';
+}
+function refreshSaveBtn(){
+  const name=document.getElementById("fName").value.trim();
+  const ready=!!name && !!img;
+  document.getElementById("saveCard").disabled=!ready;
+  const req=document.getElementById("photoReq");
+  if(img){req.textContent="Photo added ✓";req.classList.add("ok");}
+  else{req.textContent="A photo is required to save your card.";req.classList.remove("ok");}
+}
+document.getElementById("fName").addEventListener("input",()=>{render();updateProgress();});
+document.querySelectorAll(".off-w,.off-l").forEach(i=>i.addEventListener("input",()=>{render();updateProgress();}));
+
+/* =========================================================
+   PROGRESS (whole journey)
+========================================================= */
+function updateProgress(){
+  const name=document.getElementById("fName").value.trim();
+  const milestones=[
+    !!name,
+    !!img,
+    interests.length>0,
+    offVals("off-w").some(Boolean),
+    offVals("off-l").some(Boolean),
+    cardSaved,
+    recSaved
+  ];
+  const done=milestones.filter(Boolean).length;
+  const pct=Math.round(done/milestones.length*100);
+  document.getElementById("pfill").style.width=pct+"%";
+  document.getElementById("plabel").textContent=pct+"% complete";
+  document.getElementById("progress").classList.toggle("complete",pct===100);
+}
+
+/* =========================================================
+   LOAD / SAVE CARD
+========================================================= */
+async function loadProfile(h){
+  cardSaved=false;
+  // reset
+  document.getElementById("fName").value=""; interests=[]; accent=ACCENTS[0];
+  img=null; stageImg.style.display="none"; stage.classList.add("empty"); stageEmpty.style.display="flex";
+  zoom.disabled=true; zoom.value=1; photoState={scale:1,x:0,y:0};
+  document.querySelectorAll(".off-w,.off-l").forEach(i=>i.value="");
+  let d=null;
+  try{ d=await DB.getProfile(h); }catch(e){ console.error(e); }
+  if(d){
+    document.getElementById("fName").value=d.name||"";
+    interests=(d.interests||[]).slice(0,3);
+    accent=d.accent||ACCENTS[0];
+    (d.work||[]).forEach((v,i)=>{const e=document.querySelectorAll(".off-w")[i];if(e)e.value=v;});
+    (d.life||[]).forEach((v,i)=>{const e=document.querySelectorAll(".off-l")[i];if(e)e.value=v;});
+    if(d.photo){const im=new Image();im.onload=()=>{img=im;stageImg.src=d.photo;stageImg.style.display="block";
+      stage.classList.remove("empty");stageEmpty.style.display="none";zoom.disabled=false;applyTransform();render();updateProgress();};im.src=d.photo;}
+    cardSaved=true;
+  }
+  buildChips(); renderAccents();
+}
+async function saveCard(){
+  if(!who) return;
+  const name=document.getElementById("fName").value.trim();
+  if(!name || !img){ refreshSaveBtn(); return; }
+  const btn=document.getElementById("saveCard");btn.disabled=true;btn.textContent="Saving…";
+  const data={ handle:who, name, accent, photo:bakePhoto(), interests:interests.slice(0,3),
+    work:offVals("off-w").filter(Boolean).slice(0,3), life:offVals("off-l").filter(Boolean).slice(0,3),
+    submittedAt:new Date().toISOString() };
+  let ok=true;
+  try{ await DB.upsertProfile(who,data); }catch(e){ console.error(e); ok=false; }
+  btn.textContent="Save my card";btn.disabled=false;
+  if(!ok){document.getElementById("cardNote").textContent="Couldn't save — check your connection and try again.";return;}
+  cardSaved=true; syncJourney(); updateProgress();
+  showDone(name+", your card is saved.","Now the best part — head to Phase 2 and shout out your teammates.",
+    [{label:"Shout out the team →",action:()=>{backToApp();setPane("rec");},primary:true},{label:"Back to my card",action:backToApp}]);
+}
+
+/* =========================================================
+   RECOGNITION
+========================================================= */
+let recPrefill={};
+async function buildRec(){
+  const area=document.getElementById("recArea"), bar=document.getElementById("recSavebar");
+  if(!who){ area.innerHTML='<div class="needid">Sign in first to see your teammates here.</div>'; bar.style.display="none"; return; }
+  bar.style.display="block";
+  recPrefill={}; recSaved=false;
+  let ex=null; try{ ex=await DB.getRecognition(who);}catch(e){}
+  if(ex){ (ex.items||[]).forEach(it=>recPrefill[it.to]=it.text); if((ex.items||[]).some(it=>it.text)) recSaved=true; }
+  const others=ROSTER.filter(n=>n!==who);
+  area.innerHTML='<div class="rec-grid">'+others.map(n=>
+    '<div class="rec-card" data-card="'+n+'">'+
+      '<label><span class="tag">To</span> '+n+'</label>'+
+      '<textarea data-to="'+n+'" placeholder="What did '+n+' do well this half?" oninput="markFilled(this)">'+esc(recPrefill[n]||"")+'</textarea>'+
+    '</div>').join("")+'</div>';
+  document.querySelectorAll("#recArea textarea").forEach(t=>markFilled(t));
+}
+function markFilled(t){t.closest(".rec-card").classList.toggle("filled",!!t.value.trim());}
+async function saveRec(){
+  if(!who) return;
+  const items=[...document.querySelectorAll("#recArea textarea")].map(t=>({to:t.dataset.to,text:t.value.trim()})).filter(x=>x.text);
+  let ok=true;
+  try{ await DB.upsertRecognition(who,{from:who,items,submittedAt:new Date().toISOString()}); }catch(e){ ok=false; }
+  if(!ok){alert("Couldn't save — check your connection.");return;}
+  recSaved=true; syncJourney(); updateProgress();
+  showDone("Shout-outs saved.", items.length+" teammate"+(items.length===1?"":"s")+" recognized. Thank you.",
+    [{label:"Back to the form",action:backToApp,primary:true}]);
+}
+
+/* =========================================================
+   PANES / DONE / JOURNEY
+========================================================= */
+function setPane(p){document.querySelectorAll(".jstep").forEach(b=>b.classList.toggle("on",b.dataset.pane===p));
+  document.getElementById("pane-card").classList.toggle("on",p==="card");
+  document.getElementById("pane-rec").classList.toggle("on",p==="rec");
+  window.scrollTo({top:0,behavior:"smooth"});}
+function syncJourney(){
+  const c=document.querySelector('.jstep[data-pane="card"]'); if(c)c.classList.toggle("done",cardSaved);
+  const r=document.querySelector('.jstep[data-pane="rec"]'); if(r)r.classList.toggle("done",recSaved);
+}
+function showDone(msg,sub,btns){document.getElementById("app").style.display="none";document.getElementById("done").style.display="block";
+  document.getElementById("doneMsg").textContent=msg;document.getElementById("doneSub").textContent=sub;
+  const box=document.getElementById("doneBtns");box.innerHTML="";
+  (btns||[{label:"Back to my card",action:backToApp}]).forEach(b=>{const el=document.createElement("button");el.className="btn"+(b.primary?"":" ghost");el.textContent=b.label;el.onclick=b.action;box.appendChild(el);});
+  window.scrollTo(0,0);}
+function backToApp(){document.getElementById("done").style.display="none";document.getElementById("app").style.display="block";window.scrollTo(0,0);}
+
+/* =========================================================
+   ADMIN
+========================================================= */
+let profiles=[], recs=[], members=[], curTab="status";
+async function openAdmin(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("app").style.display="none";
+  document.getElementById("done").style.display="none";
+  document.getElementById("admin").classList.add("show");window.scrollTo(0,0);
+  let cfg=null; try{ cfg=await DB.getConfig("organizer_passcode"); }catch(e){}
+  cfg?renderGate("enter",cfg):renderGate("create");
+}
+function closeAdmin(){document.getElementById("admin").classList.remove("show");
+  const sess=localStorage.getItem("session:handle");
+  if(sess&&who){document.getElementById("app").style.display="block";}
+  else{document.getElementById("login").style.display="flex";}
+}
+function renderGate(mode,saved){document.getElementById("dash").style.display="none";const g=document.getElementById("gate");g.style.display="block";
+  g.innerHTML = mode==="create"
+    ? '<div class="gate"><h2>Set an organizer passcode</h2><p>First time here. This is a light gate for an internal team, not real security.</p><input id="pc" type="password" placeholder="Create a passcode"><button class="btn full" style="margin-top:14px" onclick="createPc()">Save passcode</button></div>'
+    : '<div class="gate"><h2>Organizer access</h2><p>Enter your passcode.</p><input id="pc" type="password" placeholder="Passcode"><button class="btn full" style="margin-top:14px" onclick="checkPc(\''+esc(saved)+'\')">Open dashboard</button></div>';
+  document.getElementById("pc").addEventListener("keydown",e=>{if(e.key==="Enter")g.querySelector(".btn").click();});}
+async function createPc(){const v=document.getElementById("pc").value.trim();if(!v)return;await DB.setConfig("organizer_passcode",v);enterDash();}
+function checkPc(saved){const i=document.getElementById("pc");if(i.value===saved)enterDash();else{i.style.borderColor="var(--coral-deep)";i.value="";i.placeholder="Wrong passcode";}}
+function enterDash(){document.getElementById("gate").style.display="none";document.getElementById("dash").style.display="block";loadDash();}
+
+async function loadDash(){
+  try{
+    profiles=await DB.listProfiles();
+    recs=await DB.listRecognition();
+    members=await DB.listMembers();
+  }catch(e){ profiles=[];recs=[];members=[]; }
+  const recCount=recs.reduce((s,r)=>s+((r.items||[]).length),0);
+  document.getElementById("statRow").innerHTML=
+    '<div class="scard"><div class="n">'+profiles.length+'/'+ROSTER.length+'</div><div class="l">cards in</div></div>'+
+    '<div class="scard"><div class="n">'+recs.length+'/'+ROSTER.length+'</div><div class="l">people sent shout-outs</div></div>'+
+    '<div class="scard"><div class="n">'+recCount+'</div><div class="l">total shout-outs</div></div>'+
+    '<div class="scard"><div class="n">'+members.length+'/'+ROSTER.length+'</div><div class="l">passcodes issued</div></div>';
+  document.getElementById("backendBanner").innerHTML = USE_SUPABASE
+    ? '<div class="banner ok">Connected to Supabase — data is shared across everyone.</div>'
+    : '<div class="banner">No backend configured — running on this browser only. Paste your Supabase keys at the top of the file to go live for the whole team.</div>';
+  setTab(curTab);
+}
+function setTab(t){curTab=t;document.querySelectorAll(".atab").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  const b=document.getElementById("tabBody");
+  b.innerHTML = t==="status"?statusView():t==="passcodes"?passcodesView():t==="profiles"?profilesView():receivedView();}
+const norm=n=>(n||"").toLowerCase();
+
+function statusView(){
+  const ph=new Set(profiles.map(p=>norm(p.handle||p.name))), rh=new Set(recs.map(r=>norm(r.from)));
+  const rows=ROSTER.map(n=>'<tr><td>'+n+'</td>'+
+    '<td>'+(ph.has(norm(n))?'<span class="pill in">in</span>':'<span class="pill out">pending</span>')+'</td>'+
+    '<td>'+(rh.has(norm(n))?'<span class="pill in">in</span>':'<span class="pill out">pending</span>')+'</td></tr>').join("");
+  return '<table><thead><tr><th>Name</th><th>Card</th><th>Recognition</th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+/* ----- passcodes ----- */
+function passcodesView(){
+  const byHandle={}; members.forEach(m=>byHandle[norm(m.handle)]=m.passcode);
+  const issued=ROSTER.filter(n=>byHandle[norm(n)]).length;
+  const rows=ROSTER.map(n=>{
+    const code=byHandle[norm(n)];
+    return '<tr><td>'+n+'</td><td>'+(code?'<span class="code">'+code+'</span>':'<span class="hint" style="display:inline">— not issued —</span>')+'</td>'+
+      '<td style="text-align:right"><button class="link-btn" onclick="regen(\''+n+'\')">'+(code?"regenerate":"generate")+'</button></td></tr>';
+  }).join("");
+  return '<div class="toolbar">'+
+      '<button class="btn sm" onclick="genMissing()">Generate codes for everyone missing one</button>'+
+      '<button class="btn ghost sm" onclick="exportPasscodesCSV()">Export passcodes CSV</button>'+
+    '</div>'+
+    '<div class="hint" style="margin:-8px 0 14px">'+issued+' of '+ROSTER.length+' issued · hand each person their code privately. They sign in with handle + code.</div>'+
+    '<table><thead><tr><th>Handle</th><th>Passcode</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+}
+function randomCode(used){let c;do{c=String(Math.floor(100000+Math.random()*900000));}while(used.has(c));used.add(c);return c;}
+async function genMissing(){
+  const used=new Set(members.map(m=>String(m.passcode)));
+  const byHandle={}; members.forEach(m=>byHandle[norm(m.handle)]=true);
+  for(const n of ROSTER){ if(byHandle[norm(n)]) continue; await DB.upsertMember(n,randomCode(used)); }
+  members=await DB.listMembers(); setTab("passcodes"); loadDash();
+}
+async function regen(handle){
+  const used=new Set(members.map(m=>String(m.passcode)));
+  await DB.upsertMember(handle,randomCode(used));
+  members=await DB.listMembers(); setTab("passcodes"); loadDash();
+}
+function exportPasscodesCSV(){
+  const byHandle={}; members.forEach(m=>byHandle[norm(m.handle)]=m.passcode);
+  const rows=ROSTER.map(n=>[n,byHandle[norm(n)]||""].map(cc).join(","));
+  dl("team-passcodes.csv",[["handle","passcode"].map(cc).join(","),...rows].join("\n"),"text/csv");
+}
+
+function profilesView(){
+  if(!profiles.length) return '<div class="empty">No cards submitted yet.</div>';
+  const rows=profiles.slice().sort((a,b)=>(a.handle||"").localeCompare(b.handle||"")).map((p,i)=>'<tr>'+
+    '<td><b>'+esc(p.name)+'</b><br><span class="hint" style="display:inline">@'+esc(p.handle||"")+'</span></td>'+
+    '<td><span class="dot" style="background:'+(p.accent||"#ccc")+'"></span></td>'+
+    '<td>'+(p.photo?"✓":"—")+'</td>'+
+    '<td>'+((p.interests||[]).map(esc).join(", ")||"—")+'</td>'+
+    '<td><button class="link-btn" onclick="viewP('+i+')">details</button></td></tr>').join("");
+  return '<table><thead><tr><th>Name</th><th>Accent</th><th>Photo</th><th>Into</th><th></th></tr></thead><tbody>'+rows+'</tbody></table><div id="pdetail" style="margin-top:18px"></div>';
+}
+function viewP(i){const list=profiles.slice().sort((a,b)=>(a.handle||"").localeCompare(b.handle||""));const p=list[i];
+  document.getElementById("pdetail").innerHTML='<div class="block"><h2>'+esc(p.name)+' <span class="mono-badge" style="background:'+(p.accent||"#ccc")+'">'+esc(monogram(p.name,p.handle))+'</span></h2><p class="lead">@'+esc(p.handle||"")+'</p>'+
+    (p.photo?'<img src="'+p.photo+'" style="width:150px;border-radius:14px;margin-bottom:14px">':"")+
+    '<div class="field"><label>Into</label><div>'+((p.interests||[]).map(esc).join(", ")||"—")+'</div></div>'+
+    '<div class="field"><label>Offers · work</label><div>'+((p.work||[]).map(esc).join("<br>")||"—")+'</div></div>'+
+    '<div class="field"><label>Offers · life</label><div>'+((p.life||[]).map(esc).join("<br>")||"—")+'</div></div></div>';
+}
+function receivedView(){
+  const map={};
+  recs.forEach(r=>(r.items||[]).forEach(it=>{const k=norm(it.to);if(!map[k])map[k]={name:it.to,items:[]};map[k].items.push({from:r.from,text:it.text});}));
+  const list=Object.values(map).sort((a,b)=>b.items.length-a.items.length);
+  if(!list.length) return '<div class="empty">No recognition yet. This view groups every shout-out by who received it — the raw material for each certificate.</div>';
+  return list.map(x=>'<div class="pivot"><h4>'+esc(x.name)+' <span class="hint" style="display:inline">· '+x.items.length+' received</span></h4>'+
+    x.items.map(it=>'<div class="from">'+esc(it.from)+' says</div><div class="rt">'+esc(it.text)+'</div>').join("")+'</div>').join("");
+}
+
+/* ----- exports ----- */
+function dl(name,content,type){const b=new Blob([content],{type}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+const cc=s=>'"'+String(s==null?"":s).replace(/"/g,'""')+'"';
+function exportJSON(){dl("team-data.json",JSON.stringify({profiles,recognition:recs},null,2),"application/json");}
+function exportProfilesCSV(){const h=["handle","name","accent","has_photo","into","offers_work","offers_life","submittedAt"];
+  const rows=profiles.map(p=>[p.handle,p.name,p.accent,p.photo?"yes":"no",(p.interests||[]).join(" | "),(p.work||[]).join(" | "),(p.life||[]).join(" | "),p.submittedAt].map(cc).join(","));
+  dl("team-profiles.csv",[h.map(cc).join(","),...rows].join("\n"),"text/csv");}
+function exportRecCSV(){const h=["from","to","text"];const rows=[];recs.forEach(r=>(r.items||[]).forEach(it=>rows.push([r.from,it.to,it.text].map(cc).join(","))));
+  dl("team-recognition.csv",[h.map(cc).join(","),...rows].join("\n"),"text/csv");}
+async function clearAll(){if(!confirm("Delete ALL cards and recognition? Passcodes are kept. Cannot be undone."))return;if(!confirm("Really sure? Everyone would resubmit."))return;
+  await DB.clearSubmissions();loadDash();}
+
+/* =========================================================
+   INIT
+========================================================= */
+(async function init(){
+  renderAccents(); buildChips(); render();
+  const sess=localStorage.getItem("session:handle");
+  if(sess){
+    try{ const m=await DB.getMember(sess); if(m){ enterApp(m.handle); return; } }catch(e){}
+  }
+  document.getElementById("login").style.display="flex";
+})();
+</script>
+</body>
+</html>
